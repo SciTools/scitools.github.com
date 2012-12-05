@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Iris pull requests</title>
+        <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+        <style>
+            table td {
+                padding: 0.5em;
+            }
+            table td.number {
+                width: 40px;
+            }
+            table td.user {
+                padding: 0em 3em;
+            }
+            img.avatar {
+                width: 32px;
+                height: 32px;
+            }
+        </style>
+    </head>
+<body>
+<h1>Issues</h1>
+<script>
+function render_user(user) {
+    result = '-';
+    if (user) {
+        result = [
+            $('<img class="avatar" src="' + user.avatar_url + '">'),
+            ' ' + user.login
+        ];
+    }
+    return result
+}
+
+function show_pulls(pulls) {
+    var len = pulls.length;
+    var target = $('#target');
+    for(var i=0; i < len; i++) {
+        var pull = pulls[i];
+        row = $('<tr/>')
+        row.append('<td class="number">#' + pull.number + '</td>');
+        cell = $('<td class="user"></td>');
+        cell.append(render_user(pull.user));
+        row.append(cell);
+        cell = $('<td class="user"></td>');
+        cell.append(render_user(pull.assignee));
+        row.append(cell);
+        target.append(row);
+    };
+}
+
+$.ajax({
+    type: 'GET',
+    url: 'https://api.github.com/repos/SciTools/iris/pulls?callback=foo',
+    jsonpCallback: 'foo',
+    contentType: 'application/json',
+    dataType: 'jsonp',
+}).done(function(response) {
+    show_pulls(response.data);
+}).fail(function(request, status, error) {
+    alert(JSON.stringify(request) + status + error);
+});
+</script>
+<table id="target">
+    <tr>
+        <th>#</th>
+        <th>Submitted by</th>
+        <th>Assigned to</th>
+    </tr>
+</table>
+</body>
+</html>
