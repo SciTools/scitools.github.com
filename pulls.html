@@ -2,9 +2,12 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Iris pull requests</title>
+        <title>SciTools pull requests</title>
         <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
         <style>
+            div#cartopy {
+                float: right;
+            }
             table td {
                 padding: 0.5em;
             }
@@ -21,7 +24,7 @@
         </style>
     </head>
 <body>
-<h1>Issues</h1>
+<h1>SciTools issues</h1>
 <script>
 function render_user(user) {
     result = '-';
@@ -35,20 +38,23 @@ function render_user(user) {
 }
 
 function show_pulls(pulls) {
-    var len = pulls.length;
-    var target = $('#target');
-    for(var i=0; i < len; i++) {
-        var pull = pulls[i];
-        row = $('<tr/>')
-        row.append('<td class="number">#' + pull.number + '</td>');
-        cell = $('<td class="user"></td>');
-        cell.append(render_user(pull.user));
-        row.append(cell);
-        cell = $('<td class="user"></td>');
-        cell.append(render_user(pull.assignee));
-        row.append(cell);
-        target.append(row);
-    };
+    if (pulls.length > 0) {
+        var name = pulls[0].head.repo.name;
+        var len = pulls.length;
+        var target = $('#' + name + ' table');
+        for(var i=0; i < len; i++) {
+            var pull = pulls[i];
+            row = $('<tr/>')
+            row.append('<td class="number">#' + pull.number + '</td>');
+            cell = $('<td class="user"></td>');
+            cell.append(render_user(pull.user));
+            row.append(cell);
+            cell = $('<td class="user"></td>');
+            cell.append(render_user(pull.assignee));
+            row.append(cell);
+            target.append(row);
+        }
+    }
 }
 
 $.ajax({
@@ -62,13 +68,38 @@ $.ajax({
 }).fail(function(request, status, error) {
     alert(JSON.stringify(request) + status + error);
 });
+
+$.ajax({
+    type: 'GET',
+    url: 'https://api.github.com/repos/SciTools/cartopy/pulls?callback=foo',
+    jsonpCallback: 'foo',
+    contentType: 'application/json',
+    dataType: 'jsonp',
+}).done(function(response) {
+    show_pulls(response.data);
+}).fail(function(request, status, error) {
+    alert(JSON.stringify(request) + status + error);
+});
 </script>
-<table id="target">
-    <tr>
-        <th>#</th>
-        <th>Submitted by</th>
-        <th>Assigned to</th>
-    </tr>
-</table>
+<div id="cartopy">
+    <h2>Cartopy</h2>
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Submitted by</th>
+            <th>Assigned to</th>
+        </tr>
+    </table>
+</div>
+<div id="iris">
+    <h2>Iris</h2>
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Submitted by</th>
+            <th>Assigned to</th>
+        </tr>
+    </table>
+</div>
 </body>
 </html>
