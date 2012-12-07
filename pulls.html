@@ -46,7 +46,7 @@ function show_pulls(pulls) {
         for(var i=0; i < len; i++) {
             var pull = pulls[i];
             row = $('<tr/>')
-            row.append('<td class="number">#' + pull.number + '</td>');
+            row.append('<td class="number"><a href="' + pull.url + '">#' + pull.number + '</a></td>');
             cell = $('<td class="user"></td>');
             cell.append(render_user(pull.user));
             row.append(cell);
